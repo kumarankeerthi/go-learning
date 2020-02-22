@@ -5,15 +5,14 @@ import (
 	"log"
 
 	"github.com/kumarankeerthi/go-learning/rest-api-mongo/employee/model"
-	"github.com/mongodb/mongo-go-driver/bson"
-	"github.com/mongodb/mongo-go-driver/mongo"
-	"github.com/mongodb/mongo-go-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func CollectionHandle(dbname string, collectionName string) *mongo.Collection {
 	client := establishConnection()
 	collection := client.Database(dbname).Collection(collectionName)
-
 	return collection
 }
 
@@ -30,9 +29,8 @@ func establishConnection() *mongo.Client {
 }
 
 func FindEmployeeByID(id string, collection *mongo.Collection) model.Employee {
-	filter := bson.D{{"firstname", "Chin"}}
+	filter := bson.D{{"id", "3"}}
 	var result model.Employee
-
 	err := collection.FindOne(context.TODO(), filter).Decode(&result)
 	if err != nil {
 		log.Fatal(err)
