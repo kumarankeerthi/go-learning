@@ -2,7 +2,7 @@ package router
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/kumarankeerthi/go-learning/webserver/controller"
+	"github.com/kumarankeerthi/go-learning/whatsapp/controller"
 )
 
 func MessageRouter(r *mux.Router) *mux.Router {
