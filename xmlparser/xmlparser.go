@@ -1,88 +1,62 @@
 package main
 
 import (
-	"encoding/xml"
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
+	"time"
+
+	"github.com/kumarankeerthi/go-learning/xmlparser/model"
 )
 
-type Document struct {
-	DocumentId    int
-	TransactionId string
-	DocumentType  string `xml:"DocType"`
-}
+func PrintData(outputFilePath string, data <-chan model.Policy) {
+	s := ""
+	polFile, err := os.Create(outputFilePath + "\\PolicyData.txt")
+	CheckError(err, "creating policy data file")
 
-type Transaction struct {
-	TransactionId string
-	Comment       string
-}
+	txnFile, err := os.Create(outputFilePath + "\\TxnData.txt")
+	CheckError(err, "creating policy data file")
 
-type Policy struct {
-	XMLName      xml.Name      `xml:"Policy"`
-	PolicyId     int           `xml:"ID,attr"`
-	CaseNumber   int           `xml:"CaseNum"`
-	Transactions []Transaction `xml:"Transactions>Transaction"`
-	Documents    []Document    `xml:"Documents>Document"`
-}
+	docFile, err := os.Create(outputFilePath + "\\DocData.txt")
+	CheckError(err, "creating policy data file")
 
-func checkError(e error, step string) {
-	if e != nil {
-		fmt.Println(step)
-		panic("system failure at")
-	}
-}
-
-func FetchXMLFiles(path string, channelOfFiles chan<- os.FileInfo) {
-
-	listOfFiles, err := ioutil.ReadDir(path)
-	checkError(err, "Reading input Directory")
-
-	for _, file := range listOfFiles {
-		channelOfFiles <- file
-	}
-	close(channelOfFiles)
-
-}
-
-func ParseXMLFiles(path string, channelOfFiles <-chan os.FileInfo, channelOfPolicies chan<- Policy) {
-	p := Policy{}
-	defer close(channelOfPolicies)
-	for file := range channelOfFiles {
-		p = Policy{}
-		//fmt.Println("Parsing xml file name :", file.Name())
-		data, err := ioutil.ReadFile(path + "/" + file.Name())
-		checkError(err, "Reading xml file")
-
-		err = xml.Unmarshal([]byte(data), &p)
-		checkError(err, "Unmarshalling xml file")
-		channelOfPolicies <- p
-	}
-}
-
-func PrintData(data <-chan Policy) {
-	fmt.Println("Policy  CaseNumber  TxnId  DocId")
 	for p := range data {
-		fmt.Println(" ")
-		fmt.Print(p.PolicyId, p.CaseNumber)
-		for _, txn := range p.Transactions {
-			fmt.Print("      ", txn.TransactionId)
+		for _, ca := range p.Cases {
+			s = fmt.Sprintf("  %s ¿ %s ¿ %d", p.PolicyId, ca.CaseId, ca.CaseNumber)
+			fmt.Fprintln(polFile, s)
+
+			for _, txn := range ca.Transactions {
+				s = fmt.Sprintf("  %s ¿ %d ¿ %s", p.PolicyId, ca.CaseNumber, txn.TransactionId)
+				fmt.Fprintln(txnFile, s)
+			}
+			for _, doc := range ca.Documents {
+				s = fmt.Sprintf("  %s ¿ %d ¿ %d", p.PolicyId, ca.CaseNumber, doc.DocumentId)
+				fmt.Fprintln(docFile, s)
+			}
 		}
-		for _, doc := range p.Documents {
-			fmt.Print("     ", doc.DocumentId)
-		}
-		fmt.Println("  ")
 	}
+
+	err = polFile.Close()
+	err = txnFile.Close()
+	err = docFile.Close()
 }
 
 func main() {
-	inputFilePath := flag.String("inputFilePath", "/Users/KumaranKeerthi/go/data", "XML file location")
+	inputFilePath := flag.String("inputFilePath", "C:\\Users\\kkumaran\\Desktop\\go-data\\input", "XML file location")
+	outputFilePath := flag.String("outputFilePath", "C:\\Users\\kkumaran\\Desktop\\go-data\\output", "Output file location")
 	flag.Parse()
 
+	start := time.Now()
+
 	channelOfFiles := make(chan os.FileInfo)
-	channelOfPolices := make(chan Policy)
+	channelOfPolices := make(chan model.Policy)
+
 	go FetchXMLFiles(*inputFilePath, channelOfFiles)
+
 	go ParseXMLFiles(*inputFilePath, channelOfFiles, channelOfPolices)
-	PrintData(channelOfPolices)
+
+	PrintData(*outputFilePath, channelOfPolices)
+
+	elapsed := time.Since(start)
+	fmt.Printf("Processing took %s", elapsed)
 }
