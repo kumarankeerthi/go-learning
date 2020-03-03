@@ -1,7 +1,7 @@
 package core
 
 type PersonService interface {
-	SavePerson(person Person) (string, error)
-	GetPersonById(pid string) Person
-	GetPersons() []Person
+	AddPerson(person Person) (string, error)
+	FetchPersonById(pid string) Person
+	FetchAllPersons() []Person
 }

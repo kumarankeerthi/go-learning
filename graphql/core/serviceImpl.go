@@ -1,26 +1,37 @@
 package core
 
 import (
-	"fmt"
+	"github.com/go-kit/kit/log"
 )
 
 type PersonServImpl struct {
 	personRepo PersonRepository
+	logger     log.Logger
 }
 
-func CreatePersonService(personRepo PersonRepository) *PersonServImpl {
-	return &PersonServImpl{personRepo: personRepo}
+func CreatePersonService(personRepo PersonRepository, log log.Logger) *PersonServImpl {
+	return &PersonServImpl{
+		personRepo: personRepo,
+		logger:     log,
+	}
 }
 
-func (ps *PersonServImpl) SavePerson(person Person) (string, error) {
-	return ps.personRepo.SavePerson(person)
+func (ps *PersonServImpl) AddPerson(person Person) (string, error) {
+	logger := log.With(ps.logger, "method", "AddPerson")
+	result, err := ps.personRepo.SavePerson(person)
+	if err != nil {
+		//level.Error(logger).Log("err", err)
+		return "failed", err
+	}
+	logger.Log("Person Creeated")
+	return result, nil
+
 }
 
-func (ps *PersonServImpl) GetPersonById(pid string) Person {
-	fmt.Println("in service impl layer")
+func (ps *PersonServImpl) FetchPersonById(pid string) Person {
 	return ps.personRepo.GetPersonById(pid)
 }
 
-func (ps *PersonServImpl) GetPersons() []Person {
+func (ps *PersonServImpl) FetchAllPersons() []Person {
 	return ps.personRepo.GetPersons()
 }
