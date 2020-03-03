@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 
@@ -22,9 +23,16 @@ func CreateHandler(cs chat.ChatService) RequestHandler {
 
 func (h *handler) ViewChat(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(("viewing messages"))
-	h.chatServ.ViewChat("k", "h")
+	var c chat.Chat
+	json.NewDecoder(r.Body).Decode(&c)
+	messages, _ := h.chatServ.ViewChat(c.Sender, c.Recipent)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(messages)
 }
 
 func (h *handler) SendMessage(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("sedning messages")
+	var c chat.Chat
+	json.NewDecoder(r.Body).Decode(&c)
+	h.chatServ.SendMessage(c)
 }

@@ -1,6 +1,6 @@
 package chat
 
 type ChatRepository interface {
-	ViewChat(sender string, recipient string) ([]Chat, error)
-	SendMessage(sender string, recipient string, message string) error
+	ViewChat(sender string, recipient string) ([]Messages, error)
+	SendMessage(chat Chat) error
 }

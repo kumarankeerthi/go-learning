@@ -1,12 +1,13 @@
 package chat
 
-type Message struct {
-	Text string `json:"text`
-	ID   int    `json:"Id"`
+type Chat struct {
+	Sender    string `json:"sender"`
+	Recipent  string `json:"recipient"`
+	Message   string `json:"message"`
+	Timestamp string `json:"timestamp,omitIfBlank"`
 }
 
-type Chat struct {
-	Sender   string `json:"sender"`
-	Recipent string `json:"recipient"`
-	Messages string `json:"message"`
+type Messages struct {
+	Message   string `json:"message"`
+	Timestamp string `json:"timestamp,omitIfBlank"`
 }
