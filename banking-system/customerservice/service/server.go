@@ -1,16 +1,30 @@
 package service
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+
+	//"github.com/kumarankeerthi/go-learning/banking-system/common/monitoring"
+	"github.com/kumarankeerthi/go-learning/banking-system/customerservice/core"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
+type Server struct {
+	handler *Handler
+}
+
+func CreateServer(serv core.Service) *Server {
+	h := CreateHandler(serv)
+	return &Server{handler: h}
+}
+
 // StartServer function will start the server
-func StartServer(port string) {
+func (s *Server) Start(port string) {
 	log.Println("Starting HTTP server for customerservice!")
 
 	r := chi.NewRouter()
@@ -22,7 +36,16 @@ func StartServer(port string) {
 
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.Get("/", dummyHandler())
+	// r.Route("/customer", func(r chi.Router) {
+	// 	r.With(Monitor("customerservice", "AddCustomer", "GET /customer")).
+	// 		Post("/customer", s.handler.AddCustomer)
+	// })
+
+	r.With(Monitor("customerservice", "AddCustomer", "GET /customer")).Post("/customer", s.handler.AddCustomer)
+	//r.With(Monitor("customerservice", "AddCustomer", "GET /customer")).Post("/customer1", s.handler.AddCustomer)
+	//r.Post("/customer", s.handler.AddCustomer)
+	r.Get("/health", s.handler.Health)
+	r.Get("/metrics", promhttp.Handler().ServeHTTP)
 
 	http.Handle("/", r)
 	err := http.ListenAndServe(":"+port, nil)
@@ -32,9 +55,20 @@ func StartServer(port string) {
 	}
 }
 
-func dummyHandler() func(http.ResponseWriter, *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Content-Type", "application/json")
-		w.Write([]byte("\"result\":\"OK\""))
+func test(name string) func(http.Handler) http.Handler {
+	fmt.Println(name)
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			fmt.Println("before monitor")
+			next.ServeHTTP(w, r)
+			fmt.Println("after monitor")
+		})
 	}
+}
+func myMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("before monitor")
+		next.ServeHTTP(w, r)
+		fmt.Println("after monitor")
+	})
 }
