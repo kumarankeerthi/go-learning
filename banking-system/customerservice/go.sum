@@ -146,6 +146,8 @@ github.com/kr/pretty v0.1.0/go.mod h1:dAy3ld7l9f0ibDNOQOHHMYYIIbhfbHSm3C4ZsoJORN
 github.com/kr/pty v1.1.1/go.mod h1:pFQYn66WHrOpPYNljwOMqo10TkYh1fy3cYio2l3bCsQ=
 github.com/kr/text v0.1.0/go.mod h1:4Jbv+DJW3UT/LiOwJeYQe1efqtUx/iVham/4vfdArNI=
 github.com/kumarankeerthi/go-learning v0.0.0-20200305215428-224aa5d4c131 h1:pPL+b1sWMf6S7ta0sZYX5f4dC8/6oHYUB2/c3lH+1nY=
+github.com/kumarankeerthi/go-learning v0.0.0-20200309023528-88dcd184a338 h1:IHe49Zj5syoJmnUcWd79WSgKdubgnaq7vhtV0fTeszY=
+github.com/kumarankeerthi/go-learning v0.0.0-20200309023528-88dcd184a338/go.mod h1:3D9PDzmuD6ezgQV9cehd1YvafxOKNG8qvkKzk9lJWeg=
 github.com/lib/pq v1.1.1 h1:sJZmqHoEaY7f+NPP8pgLB/WxulyR3fewgCM2qaSlBb4=
 github.com/lib/pq v1.1.1/go.mod h1:5WUZQaWbwv1U+lTReE5YruASi9Al49XbQIvNi/34Woo=
 github.com/lightstep/lightstep-tracer-common/golang/gogo v0.0.0-20190605223551-bc2310a04743/go.mod h1:qklhhLq1aX+mtWk9cPHPzaBjWImj5ULL6C7HFJtXQMM=

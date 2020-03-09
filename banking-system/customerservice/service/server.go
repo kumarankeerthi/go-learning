@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 
-	//"github.com/kumarankeerthi/go-learning/banking-system/common/monitoring"
+	"github.com/kumarankeerthi/go-learning/banking-system/common/monitoring"
 	"github.com/kumarankeerthi/go-learning/banking-system/customerservice/core"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -36,14 +36,8 @@ func (s *Server) Start(port string) {
 
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	// r.Route("/customer", func(r chi.Router) {
-	// 	r.With(Monitor("customerservice", "AddCustomer", "GET /customer")).
-	// 		Post("/customer", s.handler.AddCustomer)
-	// })
+	r.With(monitoring.Monitor("customerservice", "AddCustomer", "GET /customer")).Post("/customer", s.handler.AddCustomer)
 
-	r.With(Monitor("customerservice", "AddCustomer", "GET /customer")).Post("/customer", s.handler.AddCustomer)
-	//r.With(Monitor("customerservice", "AddCustomer", "GET /customer")).Post("/customer1", s.handler.AddCustomer)
-	//r.Post("/customer", s.handler.AddCustomer)
 	r.Get("/health", s.handler.Health)
 	r.Get("/metrics", promhttp.Handler().ServeHTTP)
 
