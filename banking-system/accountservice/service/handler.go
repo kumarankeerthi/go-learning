@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/kumarankeerthi/go-learning/banking-system/accountservice/core"
@@ -17,5 +18,6 @@ func CreateHandler(accSer core.Service) *Handler {
 }
 
 func (h *Handler) CreateAccount(w http.ResponseWriter, r *http.Request) {
-	h.service.CreateAccount()
+	//h.service.CreateAccount()
+	fmt.Println("Create Account Hanlder")
 }
