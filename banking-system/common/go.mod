@@ -1,4 +1,4 @@
-module github.com/kumarankeerthi/go-learnin/banking-system/common
+module github.com/kumarankeerthi/go-learning/banking-system/common
 
 go 1.14
 
