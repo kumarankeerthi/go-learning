@@ -20,7 +20,6 @@ func (ps *PersonServImpl) AddPerson(person Person) (string, error) {
 	logger := log.With(ps.logger, "method", "AddPerson")
 	result, err := ps.personRepo.SavePerson(person)
 	if err != nil {
-		//level.Error(logger).Log("err", err)
 		return "failed", err
 	}
 	logger.Log("Person Creeated")
