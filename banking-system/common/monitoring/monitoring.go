@@ -1,6 +1,7 @@
 package monitoring
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -15,25 +16,27 @@ func BuildSummaryVec(serviceName, metricName, metricHelp string) *prometheus.Sum
 			Name:      metricName,
 			Help:      metricHelp,
 		},
+		[]string{"service"},
 	)
 	prometheus.Register(summaryVec)
 	return summaryVec
 }
-
-func Monitor(serviceName,routeName,signature string) func(http.Handler) http.Handler{
-	summaryVec :=BuildSummaryVec(serviceName,routeName,signature)
-
-	return func(next http.Hanlder) http.Handler{
-		return http.Handlerfun(func (w http.ResponseWriter,r *http.Request){
-			start:=time.Now()
-			next.ServiceHTTP(w,r)
-			stop:=time.Now()
+func Monitor(serviceName, routeName, signature string) func(http.Handler) http.Handler {
+	summaryVec := BuildSummaryVec(serviceName, routeName, signature)
+	fmt.Println("inside monitor")
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			fmt.Println("before monitor")
+			next.ServeHTTP(w, r)
+			fmt.Println("after monitor")
+			duration := time.Since(start)
 
 			summaryVec.WithLabelValues("duration").Observe(duration.Seconds())
 
-			size,err := strconv.Atoi(w.Header().Get("Content-Length"))
-			if err!=nil{
-				fmt.Println("error in monitoring")
+			size, err := strconv.Atoi(w.Header().Get("Content-Length"))
+			if err != nil {
+				summaryVec.WithLabelValues("size").Observe(float64(size))
 			}
 
 		})
