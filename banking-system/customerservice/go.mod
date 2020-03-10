@@ -1,7 +1,7 @@
 module github.com/kumarankeerthi/go-learning/banking-system/customerservice
 
 go 1.14
-
+replace github.com/kumarankeerthi/go-learning/banking-system/common => C:\Users\kkumaran\Documents\Go\src\github.com\kumarankeerthi\go-learning\banking-system\common
 require (
 	github.com/go-chi/chi v4.0.3+incompatible
 	github.com/go-kit/kit v0.10.0

@@ -10,6 +10,7 @@ import (
 	"github.com/go-chi/chi/middleware"
 
 	"github.com/kumarankeerthi/go-learning/banking-system/common/monitoring"
+	"github.com/kumarankeerthi/go-learning/banking-system/common/tracing"
 	"github.com/kumarankeerthi/go-learning/banking-system/customerservice/core"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -36,7 +37,9 @@ func (s *Server) Start(port string) {
 
 	r.Use(middleware.Timeout(60 * time.Second))
 
-	r.With(monitoring.Monitor("customerservice", "AddCustomer", "GET /customer")).Post("/customer", s.handler.AddCustomer)
+	r.With(tracing.Trace("AddCustomer")).
+		With(monitoring.Monitor("customerservice", "AddCustomer", "GET /customer")).
+		Post("/customer", s.handler.AddCustomer)
 
 	r.Get("/health", s.handler.Health)
 	r.Get("/metrics", promhttp.Handler().ServeHTTP)

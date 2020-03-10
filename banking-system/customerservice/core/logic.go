@@ -2,7 +2,11 @@
 package core
 
 import (
+	"context"
 	"fmt"
+	"time"
+
+	"github.com/kumarankeerthi/go-learning/banking-system/common/tracing"
 )
 
 // CustomerService has the implementation of Service interface
@@ -16,11 +20,14 @@ func CreateCutomerService(repo Repository) *CustomerService {
 }
 
 // AddCustomer will have the logic to validate the request and then invoke the repo for the operation
-func (cs *CustomerService) AddCustomer(c Customer) (string, error) {
+func (cs *CustomerService) AddCustomer(c Customer, ctx context.Context) (string, error) {
 	// add validation here
 	// in this sample project, it will be a pass thro from trasport to db layer
+	span := tracing.TraceFuncCall("Service", ctx)
+	defer span.Finish()
+	time.Sleep(2 * time.Second)
 	fmt.Println("CustomerService : AddCustomer")
-	return cs.repo.AddCustomer(c)
+	return cs.repo.AddCustomer(c, ctx)
 }
 
 // GetCustomerByName will have the logic to validate the request and then invoke the repo for the operation

@@ -2,10 +2,13 @@
 package data
 
 import (
+	"context"
 	"fmt"
+	"time"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"github.com/kumarankeerthi/go-learning/banking-system/common/tracing"
 	"github.com/kumarankeerthi/go-learning/banking-system/customerservice/cmd"
 	"github.com/kumarankeerthi/go-learning/banking-system/customerservice/core"
 )
@@ -28,8 +31,10 @@ func CreateRepository(cfg *cmd.Config) *CockroachRepo {
 }
 
 // AddCustomer will have the logic insert data into cockraodhdb
-func (crRepo *CockroachRepo) AddCustomer(c core.Customer) (string, error) {
-
+func (crRepo *CockroachRepo) AddCustomer(c core.Customer, ctx context.Context) (string, error) {
+	span := tracing.TraceFuncCall("CockroachDB", ctx)
+	defer span.Finish()
+	time.Sleep(2 * time.Second)
 	fmt.Println("CockroachRepo : AddCustomer")
 	dbCustomer := getDBCustomerObj(c)
 	dbAddress := getDBAddressObj(c)

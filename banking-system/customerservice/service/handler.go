@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/kumarankeerthi/go-learning/banking-system/common/tracing"
 	"github.com/kumarankeerthi/go-learning/banking-system/customerservice/core"
 )
 
@@ -20,10 +21,13 @@ func CreateHandler(s core.Service) *Handler {
 	return &Handler{service: s}
 }
 func (h *Handler) AddCustomer(w http.ResponseWriter, r *http.Request) {
+	reqContext := r.Context()
+	span := tracing.TraceFuncCall("Hanlder", reqContext)
+	defer span.Finish()
 	var c core.Customer
 	json.NewDecoder(r.Body).Decode(&c)
 	fmt.Println("Handler : AddCustomer")
-	result, _ := h.service.AddCustomer(c)
+	result, _ := h.service.AddCustomer(c, reqContext)
 	w.Header().Add("Content-Type", "application/json")
 	w.Write([]byte("{\"Result\":" + result + "}"))
 
